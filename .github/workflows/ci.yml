@@ -1,20 +1,28 @@
-name: CI/CD Pipeline
+name: StudyBuddy CI/CD Pipeline
 
 on:
   push:
     branches:
       - development
+
   pull_request:
     branches:
       - development
 
 jobs:
-  ci:
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: CI/CD pipeline started
-        run: echo "CI/CD pipeline is ready for development"
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Verify Docker images
+        run: docker images
