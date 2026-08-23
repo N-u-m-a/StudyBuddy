@@ -23,3 +23,9 @@ jobs:
           echo "StudyBuddy CI pipeline is running"
           echo "Repository checked out successfully"
           echo "Backend and frontend Docker builds will be added when application code is available"
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Postman API Tests
+        run: newman run "postman/jsonplaceholder API Tests.postman_collection.json"
