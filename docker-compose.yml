@@ -1,33 +1,77 @@
 version: '3.8'
 
 services:
+
+  db:
+    image: mysql:8.0
+    container_name: studybuddy-db
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: studybuddy
+      MYSQL_USER: studyuser
+      MYSQL_PASSWORD: study123
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - app-network
+
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+
     container_name: studybuddy-backend
     restart: always
+
     ports:
       - "5000:5000"
+
     environment:
-      - PORT=5000
-      - NODE_ENV=production
+      PORT: 5000
+      NODE_ENV: production
+      DB_HOST: db
+      DB_USER: studyuser
+      DB_PASSWORD: study123
+      DB_NAME: studybuddy
+      DB_PORT: 3306
+
+    depends_on:
+      - db
+
     networks:
       - app-network
+
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+
     container_name: studybuddy-frontend
     restart: always
+
     ports:
       - "80:80"
+
     depends_on:
       - backend
+
     networks:
       - app-network
+
 
 networks:
   app-network:
     driver: bridge
+
+
+volumes:
+  mysql_data:

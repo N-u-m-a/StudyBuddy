@@ -1,18 +1,21 @@
-# --- Stage 1: Build React App with Vite ---
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ENV NODE_ENV=development
+
 COPY package*.json ./
-RUN npm ci
+
+RUN npm ci --include=dev
 
 COPY . .
+
 RUN npm run build
+
 
 # --- Stage 2: Serve with Nginx ---
 FROM nginx:alpine AS runner
 
-# Vite outputs to /app/dist
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
