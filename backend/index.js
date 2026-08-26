@@ -1,4 +1,5 @@
 const express = require("express");
+const studentRoutes = require("./routes/studentRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,8 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
+
+app.use("/students", studentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
