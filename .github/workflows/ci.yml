@@ -3,11 +3,15 @@ name: StudyBuddy CI/CD Pipeline
 on:
   push:
     branches:
+      - main
       - development
+      - testing
 
   pull_request:
     branches:
+      - main
       - development
+      - testing
 
 jobs:
   ci:
@@ -22,10 +26,41 @@ jobs:
         run: |
           echo "StudyBuddy CI pipeline is running"
           echo "Repository checked out successfully"
-          echo "Backend and frontend Docker builds will be added when application code is available"
+          echo "Checking project files..."
+          ls -la
+          echo "Backend and frontend directories:"
+          ls -la backend || true
+          ls -la frontend || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install Newman
         run: npm install -g newman
 
       - name: Run Postman API Tests
         run: newman run "postman/jsonplaceholder API Tests.postman_collection.json"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run JMeter Load Test
+        run: |
+          wget https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf apache-jmeter-5.6.3.tgz
+          ./apache-jmeter-5.6.3/bin/jmeter \
+            -n \
+            -t "jmeter/jsonplaceholder_api_test.jmx" \
+            -l jmeter/results.jtl
+
+      - name: Upload JMeter Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jmeter-results
+          path: jmeter/results.jtl
