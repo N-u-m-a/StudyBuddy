@@ -3,11 +3,11 @@ name: StudyBuddy CI/CD Pipeline
 on:
   push:
     branches:
-      - development
+      - main
 
   pull_request:
     branches:
-      - development
+      - main
 
 jobs:
   ci:
